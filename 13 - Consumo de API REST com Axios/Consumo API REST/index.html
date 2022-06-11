@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Games</title>
+  </head>
+  <body>
+    <h1>Jogos</h4>
+    <!-- <button onclick="handleLoadGames()">Atualizar</button> -->
+    <ul id="games"></ul>
+    <hr />
+    <h2>Cadastrar Jogo</h4>
+    <div class="form">
+      <input type="text" name="title" id="title" placeholder="Título">
+      <input type="number" name="year" id="year" placeholder="Ano">
+      <input type="number" name="price" id="price" placeholder="Preço ">
+      <button class="form-button" onclick="handleNewGame()">Criar</button>
+    </div>
+    <hr />
+    <h2>Editar Jogo</h4>
+      <div class="form">
+        <input type="text" name="id" id="id" placeholder="Id" readonly>
+        <input type="text" name="titleEdit" id="titleEdit" placeholder="Título">
+        <input type="number" name="yearEdit" id="yearEdit" placeholder="Ano">
+        <input type="number" name="priceEdit" id="priceEdit" placeholder="Preço ">
+        <button class="form-button" onclick="updateGame()">Editar</button>
+      </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+
+    function handleNewGame() {
+      const title = document.getElementById('title');
+      const year = document.getElementById('year');
+      const price = document.getElementById('price');
+
+      axios.post('http://localhost:4000/games', 
+        {title: title.value, year: year.value, price: price.value}).then(response => {
+          response.status === 200 && document.location.reload();
+      }).catch(err => {
+        console.log(err);
+      })
+    }
+
+    function handleLoadGames() {
+      axios.get('http://localhost:4000/games').then(response => {
+        const list = document.getElementById('games');
+  
+        response.data.forEach(game => {
+          let item = document.createElement('li');
+          item.setAttribute('data-id', game.id);
+          item.setAttribute('data-title', game.title);
+          item.setAttribute('data-year', game.year);
+          item.setAttribute('data-price', game.price);
+          item.innerHTML = `${game.id} - ${game.title} - ${game.price}`;
+
+          const editButton = document.createElement('button');
+          editButton.innerHTML = 'Editar';
+          editButton.addEventListener('click', () => loadForm(game));
+
+          const deleteButton = document.createElement('button');
+          deleteButton.innerHTML = 'Deletar';
+          deleteButton.addEventListener('click', () => deleteGame(game.id));
+
+          item.appendChild(editButton);
+          item.appendChild(deleteButton);
+          list.appendChild(item);
+        });
+      });
+    }
+
+    function loadForm(game) {
+      const { id, title, price, year } = game;
+      document.getElementById("id").value = id;
+      document.getElementById("titleEdit").value = title;
+      document.getElementById("priceEdit").value = price;
+      document.getElementById("yearEdit").value = year;
+    }
+
+    function updateGame() {
+      const id = document.getElementById('id');
+      const title = document.getElementById('titleEdit');
+      const year = document.getElementById('yearEdit');
+      const price = document.getElementById('priceEdit');
+
+      axios.put(`http://localhost:4000/games/${id.value}`, 
+        {title: title.value, year: year.value, price: price.value}).then(response => {
+          response.status === 200 && document.location.reload(true);
+      }).catch(err => {
+        console.log(err);
+      })
+    } 
+
+    function deleteGame(id) {
+      axios.delete(`http://localhost:4000/games/${id}`).then(response => {
+        response.status === 200 && document.location.reload(true);
+      }).catch(err => {
+        console.log(err);
+      })
+    }
+    handleLoadGames();
+  </script>
+</html>
