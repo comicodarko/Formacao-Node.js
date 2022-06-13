@@ -1,0 +1,14 @@
+{
+  "name": "27---mongodb-no-node-com-mongoose",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\">Formação Node.js 💻</h1>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^6.3.6"
+  }
+}
